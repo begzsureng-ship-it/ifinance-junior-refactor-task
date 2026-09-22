@@ -1,22 +1,7 @@
 /**
  * ДААЛГАВАР 2 — State-ийн замбараагүй хэрэглээ (Үнэт цаасны жагсаалт)
  *
- * Энэ хуудас бүрэн ажилладаг ч дараах State-тэй холбоотой сул талуудыг
- * зориудаар агуулж байна:
- *
- * 1) filteredSecurities нь filter-ээс "гарган авах" (derived) боломжтой утга
- *    атал тусад нь state болгож, useEffect-ээр гараар синхрончилсон.
- * 2) totalMarketValue нь filteredSecurities-ээс дахин нэг давхар state +
- *    effect-ээр тооцоологдож, гинжин (cascading) effect үүсгэсэн.
- * 3) selectedSecurity нь эх жагсаалтаас ХУУЛБАРЛАСАН тусдаа state тул
- *    үнийг "симуляцаар" өөрчлөхөд жагсаалт дахь өгөгдөлтэй зөрнө
- *    (normalization/single-source-of-truth зөрчил).
- * 4) Sort хийхдээ массивыг in-place (.sort()) mutate хийгээд ижил
- *    reference-ээр л setState рүү дамжуулж байгаа тул React зарим үед
- *    өөрчлөлтийг мэдэрч чадахгүй байж болзошгүй.
- * 5) sortByPriceAsc, sortByChangeAsc гэсэн 2 тусдаа boolean state ашигласан
- *    тул хоёулаа зэрэг "буруу" утгатай (зөрчилтэй) төлөвт орох боломжтой.
- */
+*/
 
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -50,7 +35,6 @@ const SecuritiesStateMessPage: React.FunctionComponent = () => {
   const [search, setSearch] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
 
-  // ⚠️ (1) Derived утгыг render дотор шууд бодохын оронд state + effect-ээр синк хийж байна.
   const [filteredSecurities, setFilteredSecurities] = useState<Security[]>(RAW_SECURITIES);
 
   useEffect(() => {
@@ -62,7 +46,6 @@ const SecuritiesStateMessPage: React.FunctionComponent = () => {
     setFilteredSecurities(result);
   }, [search, sectorFilter]);
 
-  // ⚠️ (2) filteredSecurities-ээс шууд тооцоолж болох утгыг дахин давхар state-д хадгалсан.
   const [totalMarketValue, setTotalMarketValue] = useState(0);
 
   useEffect(() => {
@@ -73,7 +56,6 @@ const SecuritiesStateMessPage: React.FunctionComponent = () => {
     setTotalMarketValue(sum);
   }, [filteredSecurities]);
 
-  // ⚠️ (3) "Сонгосон" үнэт цаасыг эх жагсаалтаас хуулбарлаж тусад нь хадгалсан.
   const [selectedSecurity, setSelectedSecurity] = useState<Security | null>(null);
 
   function handleSimulatePriceChange() {
@@ -82,12 +64,7 @@ const SecuritiesStateMessPage: React.FunctionComponent = () => {
       ...selectedSecurity,
       price: selectedSecurity.price * 1.01,
     });
-    // ⚠️ filteredSecurities/RAW_SECURITIES огт шинэчлэгдээгүй тул
-    // доорх хүснэгт дэх мөр хуучин үнээ хэвээр харуулна.
   }
-
-  // ⚠️ (4)(5) Массивыг in-place mutate хийж, ижил reference-ээр setState дуудна;
-  // мөн 2 тусдаа boolean sort чиглэлийг удирддаг тул зөрчилтэй байж болно.
   const [sortByPriceAsc, setSortByPriceAsc] = useState(false);
   const [sortByChangeAsc, setSortByChangeAsc] = useState(false);
 

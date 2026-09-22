@@ -5,17 +5,6 @@
  * (зарим тохиолдолд тасралтгүй) сүлжээний хүсэлт явуулна. Console (болон
  * Network tab)-ыг нээж "[fetchSecurities] Хүсэлт #N" гэсэн лог хэдэн удаа
  * хэвлэгдэж байгааг ажиглаж, шалтгааныг олж засварлана уу.
- *
- * Алдааны 3 эх үүсвэр:
- *
- * 1) params нь render бүрд ШИНЭ object болж үүсдэг тул, useEffect-ийн
- *    dependency болгож ашиглахад React "өөрчлөгдсөн" гэж үзээд render
- *    бүрд дахин ажиллана. Энэ effect дотор setState байгаа тул
- *    render → шинэ params → effect → setState → render → ... гэсэн
- *    ТАСРАЛТГҮЙ мөчлөг (loop) үүсгэнэ.
- * 2) Дээрхтэй ДАВХАЦСАН, "эхний ачааллаар мэдээлэл татъя" гэсэн тусдаа
- *    нэг useEffect(..., []) нэмж бичсэн — mount дээр нэмэлт хүсэлт үүсгэнэ.
- * 3) Хайлтын input бичих БҮРД (debounce-гүйгээр) шууд fetch дуудна.
  */
 
 import * as React from "react";
@@ -37,8 +26,6 @@ const SECURITIES_DB: Security[] = [
   { id: 3, ticker: "MIK", price: 980 },
 ];
 
-// Бодит backend байхгүй тул сүлжээний хүсэлтийг дуурайлган симуляц хийж,
-// дуудагдах бүрд тоолуур нэмэгдүүлж, console дээр хэвлэнэ.
 let requestCounter = 0;
 function fetchSecurities(query: string): Promise<Security[]> {
   requestCounter += 1;
@@ -59,8 +46,6 @@ const SecuritiesFetchBugPage: React.FunctionComponent = () => {
   const [query, setQuery] = useState("");
   const [requestCount, setRequestCount] = useState(0);
 
-  // ⚠️ (1) params нь render бүрд шинэ reference-тэй object тул
-  // энэ effect бараг render бүрд дахин ажиллана (тасралтгүй мөчлөгийн эрсдэлтэй).
   const params = { query };
   useEffect(() => {
     fetchSecurities(params.query).then((data) => {
@@ -69,12 +54,10 @@ const SecuritiesFetchBugPage: React.FunctionComponent = () => {
     });
   }, [params]);
 
-  // ⚠️ (2) Дээрхтэй давхацсан, mount дээр тусад нь дахин fetch дуудаж байна.
   useEffect(() => {
     fetchSecurities("").then((data) => setSecurities(data));
   }, []);
 
-  // ⚠️ (3) Хайлтын input бичих бүрд debounce-гүйгээр шууд fetch дуудна.
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value);
     fetchSecurities(e.target.value).then((data) => setSecurities(data));
