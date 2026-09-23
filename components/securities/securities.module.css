@@ -1,0 +1,32 @@
+/* components/securities/securities.module.css */
+.filters {
+  margin-bottom: 16px;
+}
+
+.filterControl {
+  width: 200px;
+}
+
+.summaryCard {
+  margin-bottom: 16px;
+  max-width: 320px;
+}
+
+.selectedCard {
+  margin-top: 24px;
+  max-width: 400px;
+}
+
+.sortButton {
+  padding: 0;
+  font-weight: inherit;
+}
+
+.searchInput {
+  margin-bottom: 16px;
+  max-width: 320px;
+}
+
+.statusAlert {
+  margin-bottom: 16px;
+}
