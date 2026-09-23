@@ -1,35 +1,26 @@
-import * as React from "react";
+// components/Nav.tsx
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Menu } from "antd";
 import type { MenuProps } from "antd";
 
-const NAV_ITEMS: MenuProps["items"] = [
-  {
-    key: "/",
-    label: <Link href="/">Нүүр — Гүйлгээний жагсаалт</Link>,
-  },
-  {
-    key: "/securities-state-mess",
-    label: <Link href="/securities-state-mess">Дасгал 2 — State замбараагүй</Link>,
-  },
-  {
-    key: "/securities-fetch-bug",
-    label: <Link href="/securities-fetch-bug">Дасгал 3 — useEffect/Fetch алдаа</Link>,
-  },
+const ROUTES = [
+  { href: "/", label: "Нүүр — Гүйлгээний жагсаалт" },
+  { href: "/securities-state-mess", label: "Дасгал 2 — State замбараагүй" },
+  { href: "/securities-fetch-bug", label: "Дасгал 3 — useEffect/Fetch алдаа" },
 ];
 
-const Nav: React.FunctionComponent = () => {
-  const router = useRouter();
+const NAV_ITEMS: MenuProps["items"] = ROUTES.map(({ href, label }) => ({
+  key: href,
+  label: <Link href={href}>{label}</Link>,
+}));
 
-  return (
-    <Menu
-      mode="horizontal"
-      selectedKeys={[router.pathname]}
-      items={NAV_ITEMS}
-      style={{ marginBottom: 24 }}
-    />
-  );
-};
+interface NavProps {
+  className?: string;
+}
 
-export default Nav;
+export default function Nav({ className }: NavProps) {
+  const { pathname } = useRouter();
+
+  return <Menu mode="horizontal" selectedKeys={[pathname]} items={NAV_ITEMS} className={className} />;
+}

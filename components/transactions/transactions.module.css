@@ -1,0 +1,16 @@
+/* components/transactions/transactions.module.css */
+.summary {
+  margin-bottom: 24px;
+}
+
+.filters {
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  width: 240px;
+}
+
+.statusSelect {
+  width: 200px;
+}
